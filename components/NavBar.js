@@ -5,10 +5,13 @@ import { useRouter } from 'next/navigation';
 export default function NavBar() {
   const router = useRouter();
 
-  const handleLogout = () => {
-    document.cookie = 'token=; Max-Age=0';
+  // components/NavBar.js (only the handleLogout part)
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    // After server clears the cookie, force route to login
     router.push('/login');
   };
+
 
   return (
     <nav className="bg-blue-600 text-white p-4">

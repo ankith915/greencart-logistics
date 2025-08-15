@@ -1,6 +1,6 @@
 // api/routes/route.js
 import prisma from '@/lib/prisma';
-import { verifyRequest } from '../../_utils/auth';
+import { verifyRequest } from '../_utils/auth';
 
 export async function GET(req) {
   try { verifyRequest(req); } catch { return Response.json({ error: 'Unauthorized' }, { status: 401 }); }
