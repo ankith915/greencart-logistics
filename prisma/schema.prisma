@@ -1,0 +1,63 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:ankith123@localhost:5432/postgres?schema=public"
+}
+
+enum TrafficLevel {
+  High
+  Medium
+  Low
+}
+
+model User {
+  id       Int     @id @default(autoincrement())
+  username String  @unique
+  password String
+}
+
+model Driver {
+  id              Int   @id @default(autoincrement())
+  name            String
+  shiftHours      Int
+  pastWeekHours   Int[] // Postgres array
+}
+
+model Route {
+  id           Int    @id @default(autoincrement())
+  routeId      Int    @unique
+  distanceKm   Float
+  trafficLevel TrafficLevel
+  baseTimeMin  Int
+  orders       Order[]
+}
+
+model Order {
+  id           Int    @id @default(autoincrement())
+  orderId      Int    @unique
+  valueRs      Int
+  deliveryTime String
+  routeId      Int
+  // Reference by the UNIQUE routeId field on Route
+  route        Route  @relation(fields: [routeId], references: [routeId], onDelete: Cascade)
+}
+
+model Simulation {
+  id              Int      @id @default(autoincrement())
+  numDrivers      Int
+  startTime       String
+  maxHours        Int
+  totalProfit     Float
+  efficiencyScore Float
+  onTime          Int
+  late            Int
+  fuelCosts       Float
+  fuelHigh        Float
+  fuelMedium      Float
+  fuelLow         Float
+  timestamp       DateTime @default(now())
+}
