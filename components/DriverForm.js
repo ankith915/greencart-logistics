@@ -1,52 +1,55 @@
 // components/DriverForm.js
 'use client';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
-export default function DriverForm({ onSubmit, initialData }) {
-  // defend against null/undefined initialData
-  const safeInit = initialData || {};
+let Input, Button;
+try {
+  Input = require('@/components/ui/input').Input;
+  Button = require('@/components/ui/button').Button;
+} catch {
+  Input = ({ ...p }) => <input className="p-2 border rounded w-full" {...p} />;
+  Button = ({ children, ...p }) => <button className="bg-blue-600 text-white px-3 py-2 rounded" {...p}>{children}</button>;
+}
 
-  // support both Prisma shape and legacy mongo shape:
-  // Prisma: { id, name, shiftHours, pastWeekHours }
-  // Legacy: { _id, name, shift_hours, past_week_hours }
-  const initialName = safeInit.name ?? safeInit.name ?? '';
-  const initialShift =
-    safeInit.shiftHours ?? safeInit.shift_hours ?? 0;
-  const initialPastWeek =
-    (safeInit.pastWeekHours && Array.isArray(safeInit.pastWeekHours) ? safeInit.pastWeekHours.join('|') :
-     (safeInit.past_week_hours && Array.isArray(safeInit.past_week_hours) ? safeInit.past_week_hours.join('|') : ''));
-
-  const [name, setName] = useState(initialName);
-  const [shiftHours, setShiftHours] = useState(initialShift);
-  const [pastWeek, setPastWeek] = useState(initialPastWeek);
+export default function DriverForm({ initialData = {}, onSubmit }) {
+  const safe = initialData || {};
+  const [name, setName] = useState(safe.name ?? '');
+  const [shiftHours, setShiftHours] = useState(safe.shiftHours ?? safe.shift_hours ?? 8);
+  const [pastWeek, setPastWeek] = useState((safe.pastWeekHours ?? safe.past_week_hours ?? []).join('|'));
 
   useEffect(() => {
-    // update when initialData changes
     const s = initialData || {};
-    setName(s.name ?? s.name ?? '');
-    setShiftHours(s.shiftHours ?? s.shift_hours ?? 0);
-    setPastWeek(
-      (s.pastWeekHours && Array.isArray(s.pastWeekHours) ? s.pastWeekHours.join('|') :
-       (s.past_week_hours && Array.isArray(s.past_week_hours) ? s.past_week_hours.join('|') : ''))
-    );
+    setName(s.name ?? '');
+    setShiftHours(s.shiftHours ?? s.shift_hours ?? 8);
+    setPastWeek((s.pastWeekHours ?? s.past_week_hours ?? []).join('|'));
   }, [initialData]);
 
-  const handleSubmit = (e) => {
+  const submit = (e) => {
     e.preventDefault();
-    // send payload expected by your API: shift_hours & past_week_hours
     onSubmit({
       name,
       shift_hours: Number(shiftHours),
-      past_week_hours: pastWeek ? pastWeek.split('|').map(Number) : [],
+      past_week_hours: pastWeek ? pastWeek.split('|').map(Number) : []
     });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow">
-      <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Name" className="mb-2 p-2 border w-full" />
-      <input type="number" value={shiftHours} onChange={e => setShiftHours(+e.target.value)} placeholder="Shift Hours" className="mb-2 p-2 border w-full" />
-      <input type="text" value={pastWeek} onChange={e => setPastWeek(e.target.value)} placeholder="Past Week Hours (e.g., 6|8|7)" className="mb-4 p-2 border w-full" />
-      <button type="submit" className="bg-blue-500 text-white p-2 w-full rounded">Save Driver</button>
+    <form onSubmit={submit} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <div className="sm:col-span-1">
+        <label className="text-sm text-slate-600">Name</label>
+        <Input value={name} onChange={e => setName(e.target.value)} />
+      </div>
+      <div>
+        <label className="text-sm text-slate-600">Shift Hours</label>
+        <Input type="number" value={shiftHours} onChange={e => setShiftHours(+e.target.value)} />
+      </div>
+      <div>
+        <label className="text-sm text-slate-600">Past Week (pipe-separated)</label>
+        <Input value={pastWeek} onChange={e => setPastWeek(e.target.value)} />
+      </div>
+      <div className="sm:col-span-3 flex gap-2">
+        <Button type="submit">Save</Button>
+      </div>
     </form>
   );
 }

@@ -1,6 +1,9 @@
 // components/OrderForm.js
 'use client';
 import { useState, useEffect } from 'react';
+import { Input } from './ui/input';
+import { Select } from './ui/select';
+import { Button } from './ui/button';
 
 export default function OrderForm({ initial = null, onCancel = () => {}, onSaved = () => {} }) {
   const [orderId, setOrderId] = useState(initial?.orderId ?? '');
@@ -63,56 +66,20 @@ export default function OrderForm({ initial = null, onCancel = () => {}, onSaved
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow">
+    <form onSubmit={handleSubmit} className="bg-white p-3 rounded shadow">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <input
-          required
-          type="number"
-          min="0"
-          placeholder="Order ID (numeric)"
-          value={orderId}
-          onChange={(e) => setOrderId(e.target.value)}
-          className="p-2 border rounded"
-        />
-        <input
-          required
-          type="number"
-          min="0"
-          placeholder="Value (₹)"
-          value={valueRs}
-          onChange={(e) => setValueRs(e.target.value)}
-          className="p-2 border rounded"
-        />
-        <select
-          required
-          value={routeId}
-          onChange={(e) => setRouteId(e.target.value)}
-          className="p-2 border rounded"
-        >
+        <Input required type="number" min="0" placeholder="Order ID" value={orderId} onChange={e => setOrderId(e.target.value)} />
+        <Input required type="number" min="0" placeholder="Value (₹)" value={valueRs} onChange={e => setValueRs(e.target.value)} />
+        <Select required value={routeId} onChange={e => setRouteId(e.target.value)}>
           <option value="">Select route</option>
-          {routes.map((r) => (
-            <option key={r.id} value={r.routeId}>
-              {r.routeId} — {r.trafficLevel} — {r.distanceKm} km
-            </option>
-          ))}
-        </select>
-        <input
-          required
-          type="text"
-          placeholder="Delivery Time (HH:MM)"
-          value={deliveryTime}
-          onChange={(e) => setDeliveryTime(e.target.value)}
-          className="p-2 border rounded"
-        />
+          {routes.map(r => <option key={r.id} value={r.routeId}>{r.routeId} — {r.trafficLevel} — {r.distanceKm} km</option>)}
+        </Select>
+        <Input required type="text" placeholder="Delivery Time (HH:MM)" value={deliveryTime} onChange={e => setDeliveryTime(e.target.value)} />
       </div>
 
       <div className="flex gap-2 mt-3">
-        <button disabled={loading} type="submit" className="bg-blue-600 text-white px-4 py-2 rounded">
-          {initial ? 'Update Order' : 'Create Order'}
-        </button>
-        <button type="button" onClick={onCancel} className="px-4 py-2 rounded border">
-          Cancel
-        </button>
+        <Button type="submit" disabled={loading}>{initial ? 'Update' : 'Create'} Order</Button>
+        <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
       </div>
     </form>
   );
