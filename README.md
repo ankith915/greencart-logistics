@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# GreenCart Logistics
 
-## Getting Started
+## Project Overview
+Internal tool for simulating delivery operations and calculating KPIs based on company rules. Helps managers optimize staffing and routes.
 
-First, run the development server:
+## Tech Stack
+- Frontend: Next.js (React Hooks), Tailwind CSS, Recharts
+- Backend: Next.js API Routes, Mongoose, JWT, bcrypt
+- Database: MongoDB Atlas
+- Testing: Jest
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Setup Instructions
+1. Clone repo.
+2. `npm install`
+3. Add .env with MONGODB_URI and JWT_SECRET.
+4. `npm run dev`
+5. Seed: /api/seed
+6. Login: /login (admin/password)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Environment Variables
+- MONGODB_URI
+- JWT_SECRET
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Deployment Instructions
+- Push to GitHub.
+- Vercel: Import, add env vars, deploy.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## API Documentation
+- /api/auth/login (POST): {username, password}
+- /api/simulation (POST): {numDrivers, startTime, maxHours} → KPIs
+- /api/simulation (GET): History
+- /api/drivers (GET/POST), /api/drivers/[id] (PUT/DELETE)
+- Similar for /api/routes, /api/orders
 
-## Learn More
+Example Request (Simulation):
+POST /api/simulation
+Body: {"numDrivers":5,"startTime":"09:00","maxHours":8}
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Response: {"totalProfit":1234.56,"efficiencyScore":85.5,...}
